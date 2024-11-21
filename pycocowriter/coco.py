@@ -14,8 +14,8 @@ class COCOBase(object):
     '''
     def _to_dict_fields(self, fields:list[str]) -> dict:
         return {field: self.__dict__[field] for field in fields if self.__dict__[field] is not None}
-    def _to_dict(self):
-        raise NotImplementedError('must implement a _to_dict method!')
+    def to_dict(self):
+        raise NotImplementedError('must implement a to_dict method!')
 
 
 class COCOAnnotation(COCOBase):
@@ -61,7 +61,7 @@ class COCOAnnotation(COCOBase):
             return self.bbox[-1] * self.bbox[-2]
         return None
 
-    def _to_dict(self):
+    def to_dict(self):
         return self._to_dict_fields(
             ['image_id', 'id', 'category_id', 'bbox', 
              'area', 'segmentation', 'iscrowd', 
@@ -91,7 +91,7 @@ class COCOCategory(COCOBase):
         self.keypoints = keypoints
         self.skeleton = skeleton
 
-    def _to_dict(self):
+    def to_dict(self):
         return self._to_dict_fields(
             ['name', 'id', 'supercategory', 'keypoints', 'skeleton']
         )
@@ -112,7 +112,7 @@ class COCOLicense(COCOBase):
         self.id = eye_d
         self.url = url
 
-    def _to_dict(self):
+    def to_dict(self):
         return self._to_dict_fields(
             ['name', 'id', 'url']
         )
@@ -146,7 +146,7 @@ class COCOImage(COCOBase):
         self.coco_url = coco_url
         self.date_captured = date_captured
 
-    def _to_dict(self) -> dict:
+    def to_dict(self) -> dict:
         the_dict = self._to_dict_fields(
             ['id', 'file_name', 'width', 'height', 'license', 'coco_url']
         )
@@ -175,7 +175,7 @@ class COCOInfo(COCOBase):
         self.url = url
         self.date_created = date_created
 
-    def _to_dict(self) -> dict:
+    def to_dict(self) -> dict:
         the_dict = self._to_dict_fields(
             ['year', 'version', 'description', 'contributor', 'url']
         )
@@ -317,16 +317,16 @@ class COCOData(COCOBase):
         self.licenses = licenses
         self.categories = categories
 
-    def _to_dict(self) -> dict:
+    def to_dict(self) -> dict:
         return {
-            'info': self.info._to_dict(),
-            'images': [image._to_dict() for image in self.images],
-            'annotations': [annotation._to_dict() for annotation in self.annotations],
-            'licenses': [license._to_dict() for license in self.licenses],
-            'categories': [category._to_dict() for category in self.categories]
+            'info': self.info.to_dict(),
+            'images': [image.to_dict() for image in self.images],
+            'annotations': [annotation.to_dict() for annotation in self.annotations],
+            'licenses': [license.to_dict() for license in self.licenses],
+            'categories': [category.to_dict() for category in self.categories]
         }
 
-    def _to_json(self, filename:str=None):
+    def to_json(self, filename:str=None):
         '''
         dumps this COCO to json.  If a filename is provided, writes to disk, else, returns
         the string JSON
@@ -342,6 +342,6 @@ class COCOData(COCOBase):
             if no filename is provided, returns the JSON COCO data as a string
         '''
         if filename is None:
-            return json.dumps(self._to_dict(), cls=utils.NPEncoder)
+            return json.dumps(self.to_dict(), cls=utils.NPEncoder)
         with open(filename, 'w') as f:
-            json.dump(self._to_dict(), f, cls=utils.NPEncoder)
+            json.dump(self.to_dict(), f, cls=utils.NPEncoder)

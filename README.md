@@ -1,4 +1,6 @@
-# [repo-name]
+# pycocowriter
+
+This library contains tools to assist in writing COCO-format annotation files.  Contains [typing and constructors](nodd-tools.github.io/pycocotools/api/coco) to assist in building a COCO-format file from scratch and then [dump it to json]()
 
 
 # Disclaimer

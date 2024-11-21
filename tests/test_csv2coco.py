@@ -108,7 +108,7 @@ class TestCSV2COCO(unittest.TestCase):
             [],
             categories
         )
-        coco_dict = coco_data._to_dict()
+        coco_dict = coco_data.to_dict()
         self.assertDictEqual(coco_dict, TestCSV2COCO.example_csv_as_coco)
 
 
