@@ -1,0 +1,3 @@
+# COCO module
+
+::: pycocowriter.coco

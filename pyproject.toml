@@ -1,0 +1,19 @@
+[build-system]
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
+
+[project]
+name = "pycocowriter"
+version = "0.0.1"
+description = "tools for writing coco files"
+authors = [
+    { name = "scott brown" },
+]
+dependencies = [
+    numpy,
+    jsonschema
+]
+readme = "README.md"
+classifiers = [
+    "Programming Language :: Python :: 3",
+]
