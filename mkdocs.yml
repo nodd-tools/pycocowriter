@@ -20,7 +20,7 @@ plugins:
             docstring_style: numpy
 
 nav:
-  - Home: index.md
+  - Home: README.md
   - Code Reference:
       - COCO: api/coco.md
       - CSV2COCO: api/csv2coco.md
