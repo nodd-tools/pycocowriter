@@ -61,7 +61,7 @@ Please write tests for your code.  Tests should be discoverable or runnable on a
 
 ## :medal_sports: Certificate of Origin
 
-WHEN YOU SUBMIT CODE TO THIS REPOSITORY, YOU AGREE TO LICENSE YOUR CODE UNDER [THE LICENSE][LICENSE]
+WHEN YOU SUBMIT CODE TO THIS REPOSITORY, YOU AGREE TO LICENSE YOUR CODE UNDER [THE LICENSE](LICENSE)
 
 *Developer's Certificate of Origin 1.1*
 
