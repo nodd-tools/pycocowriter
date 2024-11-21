@@ -10,8 +10,8 @@ authors = [
     { name = "scott brown" },
 ]
 dependencies = [
-    numpy,
-    jsonschema
+    "numpy",
+    "jsonschema"
 ]
 readme = "README.md"
 classifiers = [

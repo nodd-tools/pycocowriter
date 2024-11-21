@@ -1,7 +1,13 @@
 # pycocowriter
 
-This library contains tools to assist in writing COCO-format annotation files.  Contains [typing and constructors](nodd-tools.github.io/pycocotools/api/coco) to assist in building a COCO-format file from scratch and then [dump it to json]()
+This library contains tools to assist in writing COCO-format annotation files.  
+Contains [typing and constructors](https://nodd-tools.github.io/pycocowriter/api/coco) to assist in building a COCO-format file from scratch and then [dump it to json](https://nodd-tools.github.io/pycocowriter/api/coco/#pycocowriter.coco.COCOData.to_json).
+Contains [helpful conversion tools](https://nodd-tools.github.io/pycocowriter/api/csv2coco) to assist in converting annotations in flat files or from SQL queries into COCO format.
 
+# Contributing
+
+We would love to have your contributions that improve current functionality, fix bugs, or add new features
+that facilitate parsing generic image annotation formats into COCO format.  See [the contributing guidelines](CONTRIBUTING.md) for more info.
 
 # Disclaimer
 
