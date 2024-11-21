@@ -6,9 +6,13 @@ Contains [helpful conversion tools](https://nodd-tools.github.io/pycocowriter/ap
 
 # Installation
 
-  
+Install the latest stable release [from pypi](https://pypi.org/project/pycocowriter/)  
 
     pip install pycocowriter
+
+Or install the development version [from github](https://github.com/nodd-tools/pycocowriter)
+
+    pip install git+https://github.com/nodd-tools/pycocowriter.git
 
 # Contributing
 
