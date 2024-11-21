@@ -1,5 +1,7 @@
 site_name: pycocowriter
 
+repo_url: https://github.com/nodd-tools/pycocowriter
+
 theme:
   name: material
   features:
