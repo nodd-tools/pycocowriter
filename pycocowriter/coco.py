@@ -15,6 +15,7 @@ class COCOBase(object):
     def _to_dict_fields(self, fields:list[str]) -> dict:
         return {field: self.__dict__[field] for field in fields if self.__dict__[field] is not None}
     def to_dict(self):
+        '''convert COCO object to dictionary'''
         raise NotImplementedError('must implement a to_dict method!')
 
 
