@@ -7,11 +7,12 @@ name = "pycocowriter"
 version = "0.1.0"
 description = "tools for writing coco files"
 authors = [
-    { name = "scott brown" },
+    { name = "CScott Brown" },
 ]
 dependencies = [
     "numpy",
-    "jsonschema"
+    "jsonschema",
+    "ultralytics"
 ]
 readme = "README.md"
 classifiers = [
