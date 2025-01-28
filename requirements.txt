@@ -3,3 +3,5 @@ mkdocs-material
 mkdocstrings[python]
 jsonschema
 numpy
+ultralytics
+pillow

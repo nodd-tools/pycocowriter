@@ -1,4 +1,13 @@
 import doctest
+import difflib
+import json
+
+def compare_dicts(d1, d2):
+    d = difflib.Differ()
+    return list(d.compare(
+        json.dumps(d1, indent=4, sort_keys=True).splitlines(),
+        json.dumps(d2, indent=4, sort_keys=True).splitlines()
+    ))
 
 def doctests(module, tests):
     """

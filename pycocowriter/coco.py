@@ -2,6 +2,7 @@ import datetime
 import json
 from collections.abc import Iterable
 import numpy as np
+from PIL import Image
 from . import utils
 
 class COCOBase(object):
@@ -143,9 +144,15 @@ class COCOImage(COCOBase):
         self.file_name = file_name
         self.width = width
         self.height = height
+        if (self.width is None) or (self.height is None):
+            self.compute_width_and_height()
         self.license = license
         self.coco_url = coco_url
         self.date_captured = date_captured
+
+    def compute_width_and_height(self):
+        with Image.open(self.file_name) as im:
+            self.width, self.height = im.size
 
     def to_dict(self) -> dict:
         the_dict = self._to_dict_fields(
@@ -204,10 +211,10 @@ class COCOCategories(object):
     '''
     def __init__(self, categories: list[COCOCategory] | None = None):
         categories = categories or []
-        # category ids MUST match their index in the category list!
+        # category ids MUST match their index+1 in the category list!
         self.categories = categories
         for i, category in enumerate(self.categories):
-            assert category.id == i
+            assert category.id == i+1
         self.category_map = {category.name: category.id for category in self.categories}
 
     def add(self, label:str, keypoints:list[str]=None, skeleton:list[list[int]]=None) -> COCOCategory:
@@ -229,7 +236,7 @@ class COCOCategories(object):
             returns the built COCOCategory
         '''
         if label not in self.category_map:
-            category = COCOCategory(label, len(self.categories), keypoints=keypoints, skeleton=skeleton)
+            category = COCOCategory(label, len(self.categories)+1, keypoints=keypoints, skeleton=skeleton)
             self.categories.append(category)
             self.category_map[self.categories[-1].name] = self.categories[-1].id
         return self.category_map[label]
@@ -255,10 +262,10 @@ class COCOImages(object):
     '''
     def __init__(self, images: list[COCOImage] | None = None):
         images = images or []
-        # image ids MUST match their index in the image list!
+        # image ids MUST match their index+1 in the image list!
         self.images = images
         for i, image in enumerate(self.images):
-            assert image.id == i
+            assert image.id == i+1
         self.image_map = {image.filename: image.id for image in self.images}
 
     def add(self, filename:str, width:int=None, height:int=None, 
@@ -287,7 +294,7 @@ class COCOImages(object):
             returns the built COCOImage
         '''
         if filename not in self.image_map:
-            image = COCOImage(len(self.images), filename, 
+            image = COCOImage(len(self.images)+1, filename, 
                               width=width, height=height, coco_url=url, 
                               license=license, date_captured=date_captured)
             self.images.append(image)
