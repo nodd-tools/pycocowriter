@@ -226,6 +226,8 @@ class IterableKeypointParser(object):
         skeleton: list[list[int]]
             the skeleton corresponding to the keypoint names
         '''
+        if 'keypoints' not in self.config:
+            return None, None
         return (
             [
                 keypoint.name for keypoint in self.config.keypoints
