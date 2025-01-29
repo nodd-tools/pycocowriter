@@ -338,7 +338,8 @@ class Iterable2COCO(object):
         categories = coco.COCOCategories()
         images = coco.COCOImages()
         annotations = []
-        utils.skiprows(row_iterable, self.config.meta.skiprows)
+        if 'skiprows' in self.config.meta:
+            utils.skiprows(row_iterable, self.config.meta.skiprows)
         keypoint_names, keypoint_skeleton = self.keypoint_parser.keypoint_config()
         for row in row_iterable:
             bbox = self.bbox_parser.get_bbox(row)
