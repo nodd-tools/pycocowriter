@@ -140,7 +140,7 @@ class COCOImage(COCOBase):
                  width:int=None, height:int=None, 
                  license:int=None, coco_url:str=None, 
                  date_captured:datetime.datetime=None,
-                 discover_image_properites=True):
+                 discover_image_properties=True):
         self.id = eye_d
         self.file_name = file_name
         self.width = width
