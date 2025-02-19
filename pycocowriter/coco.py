@@ -139,12 +139,13 @@ class COCOImage(COCOBase):
                  eye_d:int, file_name:str, 
                  width:int=None, height:int=None, 
                  license:int=None, coco_url:str=None, 
-                 date_captured:datetime.datetime=None):
+                 date_captured:datetime.datetime=None,
+                 discover_image_properites=True):
         self.id = eye_d
         self.file_name = file_name
         self.width = width
         self.height = height
-        if (self.width is None) or (self.height is None):
+        if ((self.width is None) or (self.height is None)) and discover_image_properties:
             self.compute_width_and_height()
         self.license = license
         self.coco_url = coco_url
