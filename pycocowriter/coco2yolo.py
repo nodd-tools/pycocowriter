@@ -1,4 +1,3 @@
-from ultralytics.data.converter import convert_coco
 from pycocotools.coco import COCO
 import os
 import yaml
@@ -139,6 +138,7 @@ def coco2yolo(coco_file_dir: str, destination: str,
         Whether to attempt to read keypoint data from the COCO
         files, and create a YOLO keypoint dataset
     '''
+    from ultralytics.data.converter import convert_coco
     convert_coco(
         coco_file_dir, 
         use_segments=use_segments, 
