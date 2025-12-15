@@ -1,6 +1,7 @@
 import json
 import unittest
 
+import pycocowriter.cocomerge
 from pycocowriter.cocomerge import coco_merge
 import utils
 
@@ -360,3 +361,6 @@ class TestCocoMerge(unittest.TestCase):
     def test_coco_merge(self):
         merged = coco_merge(TestCocoMerge.example_coco_1, TestCocoMerge.example_coco_2)
         self.assertDictEqual(merged, TestCocoMerge.examples_merged)
+
+def load_tests(loader, tests, ignore):
+    return utils.doctests(pycocowriter.cocomerge, tests)
