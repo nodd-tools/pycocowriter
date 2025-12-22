@@ -184,18 +184,21 @@ def coco_reindex_categories(coco_dict: dict) -> dict:
     Examples
     --------
     >>> data = {
-    ...     'categories': [{'id': 20, 'name': 'vehicle'}],
+    ...     'categories': [{'id': 20, 'name': 'vehicle'}, {'id': 30, 'name': 'pickle'}],
     ...     'annotations': [{'id': 1, 'category_id': 20}]
     ... }
     >>> _ = coco_reindex_categories(data)
     >>> data['categories']
-    [{'id': 1, 'name': 'vehicle'}]
+    [{'id': 2, 'name': 'vehicle'}, {'id': 1, 'name': 'pickle'}]
     >>> data['annotations']
-    [{'id': 1, 'category_id': 1}]
+    [{'id': 1, 'category_id': 2}]
     """
-    id_remap = {cat["id"]: i+1 for i, cat in enumerate(coco_dict["categories"])}
-    for cat in coco_dict["categories"]:
-        cat["id"] = id_remap[cat["id"]]
+    category_name_map = {cat['name']: cat for cat in coco_dict['categories']}
+    id_remap = {}
+    for i, (name, cat) in enumerate(sorted(category_name_map.items())):
+        new_id = i+1
+        id_remap[cat['id']] = new_id
+        cat['id'] = new_id
     for ann in coco_dict["annotations"]:
         ann["category_id"] = id_remap[ann["category_id"]]
 
