@@ -112,7 +112,7 @@ def rename_label_paths(coco_file_dir: str, destination: str) -> None:
         except FileNotFoundError:
             pass    # Fail silently if the directory doesn't exist
         shutil.move(label_path, dest_label_path)
-        shutil.rmtree(ULTRALYTICS_COCO_CONVERSION_DIR)
+    shutil.rmtree(ULTRALYTICS_COCO_CONVERSION_DIR)
 
 def coco2yolo(coco_file_dir: str, destination: str, 
               use_segments: bool = False, use_keypoints: bool = False):
