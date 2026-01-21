@@ -99,6 +99,7 @@ def rename_label_paths(coco_file_dir: str, destination: str) -> None:
     '''
     os.makedirs(destination, exist_ok=True)
     for coco_file in sorted(Path(coco_file_dir).resolve().glob("*.json")):
+        print(f'transferring {coco_file}')
         basename = os.path.splitext(os.path.basename(coco_file))[0]
         # where the ultralytics script stores the labels
         label_path = os.path.join(
