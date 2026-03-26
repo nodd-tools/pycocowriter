@@ -12,6 +12,50 @@ IMAGE_DIR = 'images'
 LABEL_DIR = 'labels'
 ULTRALYTICS_COCO_CONVERSION_DIR = 'coco_converted'
 
+def discover_coco_files(coco_file_dir: str) -> dict[str, list[str]]:
+    """
+    Scans a directory for COCO JSON files and categorizes them into splits.
+
+    Uses a simple naming convention: files containing 'val' are validation,
+    files containing 'test' are testing, and all other JSON files are 
+    considered training data.
+
+    Parameters
+    ----------
+    coco_file_dir : str
+        The directory containing the COCO annotation files.
+
+    Returns
+    -------
+    dict[str, list[str]]
+        A dictionary with keys 'train', 'val', and 'test', where each value
+        is a list of absolute paths to the discovered JSON files.
+
+    Examples
+    --------
+    >>> files = discover_coco_files('./data')
+    >>> print(files['train'])
+    ['/path/to/data/train_annotations.json']
+    """
+    results = {'train': [], 'val': [], 'test': []}
+    
+    # Ensure directory exists before globbing
+    if not os.path.isdir(coco_file_dir):
+        return results
+
+    for coco_file in sorted(Path(coco_file_dir).resolve().glob("*.json")):
+        basename = coco_file.name.lower()
+        
+        if 'val' in basename:
+            results['val'].append(str(coco_file))
+        elif 'test' in basename:
+            results['test'].append(str(coco_file))
+        else:
+            results['train'].append(str(coco_file))
+            
+    return results
+
+
 def coco2yoloyaml(coco_file_dir: str, destination: str) -> None:
     '''
     Construct a YOLO-format yaml metadata file from a 
@@ -36,35 +80,50 @@ def coco2yoloyaml(coco_file_dir: str, destination: str) -> None:
     Parameters
     ----------
     coco_file_dir: str
-        The location of the COCO json files.  If "test" is in the name
-        of the file, it is assumed that this is for a test dataset.
-        If "val" is in the name of the file, it is assumed that this is for
-        a validation dataset.  Anything else is assumed to be training data 
+        The location of the COCO json files.
     destination: str
         Where to write the resulting yaml file
     '''
+    # Use the shared discovery logic
+    split_files = discover_coco_files(coco_file_dir)
+    
     result = {
         'path': destination,
         'names': {}
     }
+    
     os.makedirs(destination, exist_ok=True)
-    for coco_file in sorted(Path(coco_file_dir).resolve().glob("*.json")):
-        coco = COCO(coco_file)
-        basename = os.path.splitext(os.path.basename(coco_file))[0]
-        img_dir = os.path.join(basename, IMAGE_DIR)
-        for k in coco.cats:
-            # The classes in the coco files need to be the same!
-            result['names'][k-1] = coco.cats[k]['name']
-        if 'val' in basename:
-            result['val'] = img_dir
-        elif 'test' in basename:
-            result['test'] = img_dir
-        else:
-            result['train'] = img_dir
-    if 'val' not in result:
+    
+    for stage in split_files:
+        for json_path in split_files[stage]:
+            coco = COCO(json_path)
+            basename = os.path.splitext(os.path.basename(json_path))[0]
+            
+            # Populate the YAML 'names' dictionary
+            if not result['names']:
+                for cat_id in coco.cats:
+                    # YOLO classes are 0-indexed; COCO are typically 1-indexed
+                    result['names'][cat_id - 1] = coco.cats[cat_id]['name']
+            else:
+                for cat_id in coco.cats:
+                    # All coco files must have matching categories
+                    assert result['names'][cat_id - 1] == coco.cats[cat_id]['name']
+                
+            # Determine the relative image directory path for this split
+            # We assume YOLO images will be organized in folders named after the JSON basename
+            img_rel_path = os.path.join(basename, IMAGE_DIR)
+            if stage not in result:
+                result[stage] = []
+            result[stage].append(img_rel_path)
+
+    # Mandatory fallback: YOLO training requires a 'val' path
+    if 'train' in result and 'val' not in result:
         result['val'] = result['train']
-    with open(os.path.join(destination, 'train.yaml'),'w') as f:
-        yaml.dump(result, f)
+
+    # Write the YAML file
+    yaml_path = os.path.join(destination, 'train.yaml')
+    with open(yaml_path, 'w') as f:
+        yaml.dump(result, f, sort_keys=False)
         
 def download_coco_images(coco_file_dir: str, destination: str) -> None:
     '''
