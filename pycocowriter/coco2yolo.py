@@ -107,12 +107,20 @@ def rename_label_paths(coco_file_dir: str, destination: str) -> None:
         # where they had ought to be given our image destination
         dest_label_path = os.path.join(
             destination, basename, LABEL_DIR)
-        try:
-            shutil.rmtree(dest_label_path)
-        except FileNotFoundError:
-            pass    # Fail silently if the directory doesn't exist
-        shutil.move(label_path, dest_label_path)
-    shutil.rmtree(ULTRALYTICS_COCO_CONVERSION_DIR)
+        
+        # Gracefully degrade if no labels were generated (e.g. test set)
+        if os.path.exists(label_path):
+            # Ensure the destination's parent directory exists
+            os.makedirs(os.path.dirname(dest_label_path), exist_ok=True)
+            try:
+                shutil.rmtree(dest_label_path)
+            except FileNotFoundError:
+                pass    # Fail silently if the directory doesn't exist
+            shutil.move(label_path, dest_label_path)
+    
+    # Clean up the conversion directory if it exists
+    if os.path.exists(ULTRALYTICS_COCO_CONVERSION_DIR):
+        shutil.rmtree(ULTRALYTICS_COCO_CONVERSION_DIR)
 
 def coco2yolo(coco_file_dir: str, destination: str, 
               use_segments: bool = False, use_keypoints: bool = False):
