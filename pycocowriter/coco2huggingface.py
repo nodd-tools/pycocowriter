@@ -108,7 +108,7 @@ def sync_images(manifest: dict) -> None:
                     os.makedirs(local_path.parent, exist_ok=True)
                     
                     try:
-                        print(f"  Downloading missing image: {file_name}")
+                        print(f"  Downloading missing image: {file_name} to {local_path}")
                         urllib.request.urlretrieve(coco_url, str(local_path))
                     except urllib.error.URLError as e:
                         raise RuntimeError(f"Failing Fast: Failed to download {coco_url}. Error: {e}")
