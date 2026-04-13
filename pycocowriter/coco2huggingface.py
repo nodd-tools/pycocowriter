@@ -97,6 +97,8 @@ def sync_images(manifest: dict) -> None:
                 file_name = img['file_name']
                 coco_url = img.get('coco_url')
                 local_path = Path(img_dir) / file_name
+
+                print(f"Checking local path {local_path}")
                 
                 if not local_path.exists():
                     if not coco_url:
