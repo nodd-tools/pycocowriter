@@ -50,7 +50,7 @@ def discover_coco_files(coco_file_dir: str) -> dict[str, list[str]]:
             results['val'].append(str(coco_file))
         elif 'test' in basename:
             results['test'].append(str(coco_file))
-        else:
+        elif 'train' in basename:
             results['train'].append(str(coco_file))
             
     return results
