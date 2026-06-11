@@ -203,3 +203,62 @@ def coco_reindex_categories(coco_dict: dict) -> dict:
         ann["category_id"] = id_remap[ann["category_id"]]
 
     return coco_dict
+
+def coco_filter_categories(coco_dict: dict, keep_categories: list[str]) -> dict:
+    """
+    Filter a COCO dataset to retain only specified categories, along with their 
+    associated annotations and images.
+
+    Images that lose all of their annotations during this filtering process 
+    are removed from the dataset to prevent them from being treated as 
+    empty background images. Natively empty background images (those that 
+    started with zero annotations) are preserved.
+
+    Parameters
+    ----------
+    coco_dict : dict
+        The source COCO dataset dictionary.
+    keep_categories : list[str]
+        A list of category names to retain.
+
+    Returns
+    -------
+    dict
+        The original dataset, mutated to contain only the filtered elements.
+
+    Examples
+    --------
+    >>> data = {
+    ...     'images': [{'id': 1, 'file_name': 'a.jpg'}, {'id': 2, 'file_name': 'b.jpg'}, {'id': 3, 'file_name': 'bg.jpg'}],
+    ...     'categories': [{'id': 10, 'name': 'cat'}, {'id': 20, 'name': 'dog'}],
+    ...     'annotations': [
+    ...         {'id': 1, 'image_id': 1, 'category_id': 10},
+    ...         {'id': 2, 'image_id': 2, 'category_id': 20}
+    ...     ]
+    ... }
+    >>> filtered = coco_filter_categories(data, ['cat'])
+    >>> [cat['name'] for cat in filtered['categories']]
+    ['cat']
+    >>> [ann['id'] for ann in filtered['annotations']]
+    [1]
+    >>> [img['file_name'] for img in filtered['images']]
+    ['a.jpg', 'bg.jpg']
+    """
+    keep_set = set(keep_categories)
+    
+    # Identify images that had annotations before we started
+    orig_annotated_image_ids = {ann['image_id'] for ann in coco_dict.get('annotations', [])}
+    
+    # 1. Filter Categories
+    coco_dict['categories'] = [cat for cat in coco_dict.get('categories', []) if cat['name'] in keep_set]
+    valid_cat_ids = {cat['id'] for cat in coco_dict['categories']}
+    
+    # 2. Filter Annotations
+    coco_dict['annotations'] = [ann for ann in coco_dict.get('annotations', []) if ann['category_id'] in valid_cat_ids]
+    new_annotated_image_ids = {ann['image_id'] for ann in coco_dict['annotations']}
+    
+    # 3. Filter Images (Drop ONLY true orphans, preserving native backgrounds)
+    orphaned_image_ids = orig_annotated_image_ids - new_annotated_image_ids
+    coco_dict['images'] = [img for img in coco_dict.get('images', []) if img['id'] not in orphaned_image_ids]
+    
+    return coco_dict
