@@ -31,7 +31,7 @@ def coco_merge(*coco_dicts: dict, info: COCOInfo = COCOInfo()) -> dict:
     for data in coco_dicts:
         
         cat_id_map = {}
-        for new_cat in data["categories"]:
+        for new_cat in data.get("categories", []):
             label = new_cat["name"]
             if label in category_map:
                 cat_id_map[new_cat["id"]] = category_map[label]
@@ -43,7 +43,7 @@ def coco_merge(*coco_dicts: dict, info: COCOInfo = COCOInfo()) -> dict:
                 category_map[label] = new_id
 
         license_id_map = {}
-        for new_license in data["licenses"]:
+        for new_license in data.get("licenses", []):
             license_name = new_license["name"]
             if license_name in license_map:
                 license_id_map[new_license["id"]] = license_map[license_name]
@@ -55,7 +55,7 @@ def coco_merge(*coco_dicts: dict, info: COCOInfo = COCOInfo()) -> dict:
                 license_map[license_name] = new_id
 
         image_id_map = {}
-        for new_image in data["images"]:
+        for new_image in data.get("images", []):
             file_name = new_image["file_name"]
             if file_name in image_map:
                 image_id_map[new_image["id"]] = image_map[file_name]
@@ -68,7 +68,7 @@ def coco_merge(*coco_dicts: dict, info: COCOInfo = COCOInfo()) -> dict:
                 images.append(new_image)
                 image_map[file_name] = new_id
 
-        for new_annotation in data["annotations"]:
+        for new_annotation in data.get("annotations", []):
             new_id = len(annotations) + 1
             new_annotation["id"] = new_id
             new_annotation["category_id"] = cat_id_map[new_annotation["category_id"]]
@@ -158,11 +158,13 @@ def coco_collapse_categories(coco_dict: dict) -> dict:
     [20, 20]
     """
 
-    name_to_target_id = {cat["name"]: cat["id"] for cat in coco_dict["categories"]}
+    name_to_target_id = {cat["name"]: cat["id"] for cat in coco_dict.get("categories", [])}
     all_target_ids = set(name_to_target_id.values())
-    id_remap = {cat["id"]: name_to_target_id[cat["name"]] for cat in coco_dict["categories"]}
-    coco_dict["categories"] = [cat for cat in coco_dict["categories"] if cat["id"] in all_target_ids]
-    for ann in coco_dict["annotations"]:
+    id_remap = {cat["id"]: name_to_target_id[cat["name"]] for cat in coco_dict.get("categories", [])}
+    
+    coco_dict["categories"] = [cat for cat in coco_dict.get("categories", []) if cat["id"] in all_target_ids]
+    
+    for ann in coco_dict.get("annotations", []):
         ann["category_id"] = id_remap[ann["category_id"]]
 
     return coco_dict
@@ -193,13 +195,15 @@ def coco_reindex_categories(coco_dict: dict) -> dict:
     >>> data['annotations']
     [{'id': 1, 'category_id': 2}]
     """
-    category_name_map = {cat['name']: cat for cat in coco_dict['categories']}
+    category_name_map = {cat['name']: cat for cat in coco_dict.get('categories', [])}
     id_remap = {}
+    
     for i, (name, cat) in enumerate(sorted(category_name_map.items())):
         new_id = i+1
         id_remap[cat['id']] = new_id
         cat['id'] = new_id
-    for ann in coco_dict["annotations"]:
+        
+    for ann in coco_dict.get("annotations", []):
         ann["category_id"] = id_remap[ann["category_id"]]
 
     return coco_dict
@@ -251,11 +255,11 @@ def coco_filter_categories(coco_dict: dict, keep_categories: list[str]) -> dict:
     
     # 1. Filter Categories
     coco_dict['categories'] = [cat for cat in coco_dict.get('categories', []) if cat['name'] in keep_set]
-    valid_cat_ids = {cat['id'] for cat in coco_dict['categories']}
+    valid_cat_ids = {cat['id'] for cat in coco_dict.get('categories', [])}
     
     # 2. Filter Annotations
     coco_dict['annotations'] = [ann for ann in coco_dict.get('annotations', []) if ann['category_id'] in valid_cat_ids]
-    new_annotated_image_ids = {ann['image_id'] for ann in coco_dict['annotations']}
+    new_annotated_image_ids = {ann['image_id'] for ann in coco_dict.get('annotations', [])}
     
     # 3. Filter Images (Drop ONLY true orphans, preserving native backgrounds)
     orphaned_image_ids = orig_annotated_image_ids - new_annotated_image_ids
