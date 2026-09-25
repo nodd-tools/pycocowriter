@@ -139,7 +139,7 @@ def _cli():
         "--percentage", 
         type=float, 
         required=True,
-        help="Percentage of the dataset to keep (e.g., 10 for 10%, 50.5 for 50.5%)."
+        help="Percentage of the dataset to keep (e.g., 10 for 10 percent, 50.5 for 50.5 percent)."
     )
     parser.add_argument(
         "--seed",
